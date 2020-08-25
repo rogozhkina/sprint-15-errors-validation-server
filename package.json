@@ -1,0 +1,33 @@
+{
+  "name": "sprint-14-authentication-security",
+  "version": "0.0.1",
+  "description": "praxis authentication authorization and security",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "eslint": "eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogozhkina/sprint-14-authentication-security.git"
+  },
+  "author": "rogozhkina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rogozhkina/sprint-14-authentication-security/issues"
+  },
+  "homepage": "https://github.com/rogozhkina/sprint-14-authentication-security#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.0",
+    "validator": "^13.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4"
+  }
+}
