@@ -22,6 +22,24 @@ const userSchema = new mongoose.Schema({
         return validator.isURL(url);
       }
     }
+  },
+  email: {
+    type: String,
+    required: true,
+    index: true,
+    unique: true,
+    validate: {
+      validator(email) {
+        return validator.isEmail(email);
+      // validator: (email) => isEmail(email),
+      // message: 'Неверный формат почты'
+      }
+    }
+  },
+  password: {
+    type: String,
+    required: true,
+    //minlength: 8
   }
 });
 
