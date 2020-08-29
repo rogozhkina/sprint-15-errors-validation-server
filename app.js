@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -27,6 +29,9 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+// app.post('/signin', login);
+// app.post('/signup', createUser);
 
 app.use('/cards', cards);
 app.use('/users', users);
