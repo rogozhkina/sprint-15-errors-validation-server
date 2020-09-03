@@ -1,13 +1,14 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const user = require('../models/user');
-
+//const user = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch((err) =>
+      res.status(500).send({ message: 'На сервере произошла ошибка' })
+    );
 };
 
 module.exports.getUserById = (req, res) => {
@@ -31,9 +32,10 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-  bcrypt.hash(password, 10)
+  bcrypt
+    .hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Невалидные данные' });
@@ -46,22 +48,27 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({email})
-  .then((user) => {
-    if (!user) {
-      res.status(401).send({message: 'Неправильные почта или пароль'})
-      //return Promise.reject(new Error('Неправильные почта или пароль'))
-    }
-    return bcrypt.compare(password, user.password);
-  })
-  .then((matched) => {
-    if (!matched) {
-      return Promise.reject(new Error('Неправильные почта или пароль'));
-    }
-    //res.send({ message: 'Всё верно!' });
-    res.status(201).send({ _id: user._id})
-  })
-  .catch((err) => {
-    res.status(401).send({ message: err.message });
+  return User.findUserByCredentials(email, password)
+    .select('+password')
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', {
+        expiresIn: '7d',
+      });
+      //res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .end();
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+
+fetch('/posts', {
+  method: 'GET',
+  credentials: 'include', // теперь куки посылаются вместе с запросом
 });
-}
