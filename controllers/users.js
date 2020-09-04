@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-//const user = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -32,6 +31,7 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
+  console.log(req.body);
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
@@ -39,7 +39,9 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Невалидные данные' });
-      } else {
+      } else if (err.name === 'MongoError') {
+          res.status(401).send({ message: 'Такой пользователь уже существует' });
+        } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
@@ -47,11 +49,9 @@ module.exports.createUser = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
-    .select('+password')
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', {
+      const token = jwt.sign({ _id: user._id }, '12345678', {
         expiresIn: '7d',
       });
       //res.send({ token });
@@ -67,8 +67,3 @@ module.exports.login = (req, res) => {
       res.status(401).send({ message: err.message });
     });
 };
-
-fetch('/posts', {
-  method: 'GET',
-  credentials: 'include', // теперь куки посылаются вместе с запросом
-});
