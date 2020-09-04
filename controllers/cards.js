@@ -8,7 +8,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.createCard = (req, res) => {
-  const { name, link } = req.body;
+  const { name, link} = req.body;
   const userId = req.user._id;
   Card.create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
@@ -22,14 +22,22 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCardById = (req, res) => {
+  const userId = req.user._id;
   Card.findByIdAndRemove(req.params.id)
+    .populate('user')
     .then((card) => {
+      console.log(card.owner._id == req.user._id);
+      if (card.owner._id != req.user._id) {
+      res.status(400).send({ message: 'Нельзя удалять чужую карточку' });
+      } else {
       card.remove();
       res.send({ data: card });
+      };
     })
     .catch((err) => {
+      console.log(err.message);
       console.log(err.name);
-      if (err.name === 'CastError' || err.name === 'TypeError') {
+      if (err.name === 'TypeError') {
         res.status(404).send({ message: 'Карточка не найдена' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
