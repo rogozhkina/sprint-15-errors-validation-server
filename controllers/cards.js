@@ -26,7 +26,6 @@ module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .populate('user')
     .then((card) => {
-      console.log(card.owner._id == req.user._id);
       if (card.owner._id != req.user._id) {
       res.status(400).send({ message: 'Нельзя удалять чужую карточку' });
       } else {
@@ -35,8 +34,6 @@ module.exports.deleteCardById = (req, res) => {
       };
     })
     .catch((err) => {
-      console.log(err.message);
-      console.log(err.name);
       if (err.name === 'TypeError') {
         res.status(404).send({ message: 'Карточка не найдена' });
       } else {

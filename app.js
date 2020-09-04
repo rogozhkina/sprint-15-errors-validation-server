@@ -4,12 +4,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
-const bcrypt = require('bcryptjs');
-const escape = require('escape-html');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const auth = require('./middlewares/auth');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 
@@ -40,7 +37,7 @@ app.use('/users', users);
 app.use(helmet());
 
 app.use((req, res) => {
-  res.status('404').send({ message: 'Запрашиваемый ресурс не найден Апп' });
+  res.status('404').send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {

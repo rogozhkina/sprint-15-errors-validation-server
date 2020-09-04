@@ -20,7 +20,6 @@ module.exports.getUserById = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err.name);
       if (err.name === 'CastError') {
         res.status(404).send({ message: 'Пользователь не найден' });
       } else {
@@ -31,7 +30,6 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-  console.log(req.body);
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
@@ -54,7 +52,6 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, '12345678', {
         expiresIn: '7d',
       });
-      //res.send({ token });
       res
         .cookie('jwt', token, {
           maxAge: 3600000,
