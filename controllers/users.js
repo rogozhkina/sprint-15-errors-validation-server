@@ -30,6 +30,10 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
+  if((password == undefined) || (password.trim().length < 8)) {
+    res.status(400).send({ message: 'Невалидные данные' });
+    return;
+  };
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
