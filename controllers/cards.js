@@ -26,7 +26,7 @@ module.exports.deleteCardById = (req, res) => {
     .populate('user')
     .then((card) => {
       if (card.owner._id != req.user._id) {
-      res.status(400).send({ message: 'Нельзя удалять чужую карточку' });
+      res.status(403).send({ message: 'Нельзя удалять чужую карточку' });
       return;
       } else if (card.owner._id == req.user._id) {
       card.remove();
