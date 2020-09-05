@@ -5,9 +5,7 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) =>
-      res.status(500).send({ message: 'На сервере произошла ошибка' })
-    );
+    .catch((err) => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -30,10 +28,10 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-  if((password == undefined) || (password.trim().length < 8)) {
+  if ((password === undefined) || (password.trim().length < 8)) {
     res.status(400).send({ message: 'Невалидные данные' });
     return;
-  };
+  }
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
@@ -42,8 +40,8 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Невалидные данные' });
       } else if (err.name === 'MongoError') {
-          res.status(409).send({ message: 'Такой пользователь уже существует' });
-        } else {
+        res.status(409).send({ message: 'Такой пользователь уже существует' });
+      } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });

@@ -2,11 +2,11 @@ module.exports = {
   env: {
     browser: true,
     commonjs: true,
-    es2020: true,
+    es2021: true
   },
   extends: 'airbnb-base',
   parserOptions: {
-    ecmaVersion: 11,
+    ecmaVersion: 12
   },
   rules: {
     'no-underscore-dangle': 'off',
@@ -19,6 +19,8 @@ module.exports = {
     'object-curly-newline': 'off',
     'comma-dangle': 'off',
     'no-console': 'off',
-    'no-unused-vars': 'off'
-  },
+    'no-unused-vars': 'off',
+    eqeqeq: 'off',
+    'consistent-return': 'off',
+  }
 };

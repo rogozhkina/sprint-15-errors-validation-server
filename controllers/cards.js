@@ -8,7 +8,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.createCard = (req, res) => {
-  const { name, link} = req.body;
+  const { name, link } = req.body;
   const userId = req.user._id;
   Card.create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
@@ -26,12 +26,12 @@ module.exports.deleteCardById = (req, res) => {
     .populate('user')
     .then((card) => {
       if (card.owner._id != req.user._id) {
-      res.status(403).send({ message: 'Нельзя удалять чужую карточку' });
-      return;
-      } else if (card.owner._id == req.user._id) {
-      card.remove();
-      res.send({ data: card });
-      };
+        res.status(403).send({ message: 'Нельзя удалять чужую карточку' });
+        return;
+      } if (card.owner._id == req.user._id) {
+        card.remove();
+        res.send({ data: card });
+      }
     })
     .catch((err) => {
       if (err.name === 'TypeError') {
