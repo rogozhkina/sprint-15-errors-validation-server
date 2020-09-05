@@ -38,7 +38,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Невалидные данные' });
       } else if (err.name === 'MongoError') {
-          res.status(401).send({ message: 'Такой пользователь уже существует' });
+          res.status(409).send({ message: 'Такой пользователь уже существует' });
         } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
