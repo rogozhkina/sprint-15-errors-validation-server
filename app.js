@@ -7,9 +7,9 @@ const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./errors/not-found-err');
 
 const cards = require('./routes/cards');
 const users = require('./routes/users');
@@ -37,7 +37,6 @@ app.use(cookieParser());
 app.use(helmet());
 
 app.use(requestLogger);
-//app.use(logger);
 
 // удалить после ревью
 app.get('/crash-test', () => {
@@ -46,56 +45,26 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-// за ним идут все обработчики роутов
-// app.post('/signup', createUser);
-// app.post('/signin', login);
-// app.use('/users', usersRouter);
-// app.post('/posts', postsRouter);
-
 app.use('/cards', cards);
 app.use('/users', users);
 
 app.use(errorLogger);
 app.use(errors());
 
+app.all('/*', (req, res) => {
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
+});
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   if (err.name === 'ValidationError') {
     res.status('400').send({ message: 'Невалидные данные' });
-  // } else if (err.name === 'CastError') {
-  //   res.status('404').send({ message: 'Запрашиваемый ресурс не найден' });
-  } else if (err.name === 'CastError') {
+  } else if ((err.name === 'CastError') || (err.name === 'TypeError')) {
     res.status('404').send({ message: 'Запрашиваемый ресурс не найден' });
   } else if (err.name === 'MongoError') {
     res.status('409').send({ message: 'Такой пользователь уже существует' });
-  } else {
-    //res.status('500').send({ message: 'На сервере произошла ошибка' });
-    console.log(err.name);
-    res.status('500').send({ message: err.message });
-  }
+  } else { res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message }); }
 });
-
-// app.use((req, res) => {
-//   res.status('404').send({ message: 'Запрашиваемый ресурс не найден' });
-// });
-
-// app.use((err, req, res, next) => {
-//   // если у ошибки нет статуса, выставляем 500
-//   const { statusCode = 500, message } = err;
-
-//   res
-//     .status(statusCode)
-//     .send({
-//       // проверяем статус и выставляем сообщение в зависимости от него
-//       message: statusCode === 500
-//         ? 'На сервере произошла ошибка'
-//         : message
-//     });
-// });
-
-// app.use((err, req, res, next) => {
-//   res.status(err.statusCode).send({ message: err.message });
-// });
 
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
