@@ -27,6 +27,10 @@ router.post('/', auth, celebrate({
 }),
 createCard);
 
-router.delete('/:id', auth, deleteCardById);
+router.delete('/:id', auth, celebrate({
+  params: Joi.object().keys({
+    id: Joi.objectId().required(),
+  }),
+}), deleteCardById);
 
 module.exports = router;

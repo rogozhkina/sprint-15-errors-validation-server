@@ -20,7 +20,12 @@ const validatorURL = (link) => {
 };
 
 router.get('/', auth, getUsers);
-router.get('/:userId', auth, getUserById);
+
+router.get('/:userId', auth, celebrate({
+  params: Joi.object().keys({
+    userId: Joi.objectId().required(),
+  }),
+}), getUserById);
 
 router.post('/signin', login);
 
