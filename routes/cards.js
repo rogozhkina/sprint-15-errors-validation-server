@@ -22,7 +22,6 @@ router.post('/', auth, celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().custom(validatorURL),
-    owner: Joi.objectId().required(),
   }),
 }),
 createCard);
